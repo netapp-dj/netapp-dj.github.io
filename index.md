@@ -1,7 +1,10 @@
 # StorageGRID New Hire Onboarding — Redesign Proposal
 
+*Fewer firehoses, more flow*
+
 **Author:** DJ Rajkhowa | **Reviewer:** Claude  
 **Date:** 2026-05-13  
+**Based on:** SG Onboarding + child pages  
 **Audience:** Hiring managers, onboarding buddies, and the team maintaining this content
 
 ---
