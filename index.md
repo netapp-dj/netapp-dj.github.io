@@ -32,6 +32,42 @@ The existing onboarding is thorough but front-loads too much at once — admin s
 
 ---
 
+## Architecture at a Glance
+
+A new hire who understands how the pieces connect before touching any tooling will absorb Module 3 and Module 4 in a fraction of the time. These diagrams come from the **StorageGRID Repository Architecture Overview** (SGWS Confluence, March 2026). The doc itself recommends starting with the Executive Summary and Sections 2–3 for onboarding purposes.
+
+**System Context — two entry points:**
+- **Management plane** (UI + API): Grid and Tenant Admins connect over HTTPS to the Management UI, which talks REST to the Management API
+- **Data plane** (Gateway → Storage): S3 clients connect to nginx-gw (Gateway node), which routes to LDR on Storage nodes
+
+**Node types and what runs on each:**
+
+| Node | Role | Key components |
+|---|---|---|
+| **Admin** | Brain + API | mgmt-ui, mgmt-api, gpt2, mi (config bundles), MySQL |
+| **Gateway** | S3 front door | nginx-gw, cache-svc |
+| **Storage** | Data + metadata | LDR (ade), chunk storage, Cassandra |
+
+**S3 data path (what happens when you run `aws s3api get-object`):**
+1. Request hits `nginx-gw` on a Gateway node
+2. If caching is enabled and it's a hit → `cache-svc` returns the object directly
+3. Otherwise → forwarded to LDR on a Storage node
+4. LDR queries Cassandra for metadata and location
+5. LDR reads chunks from disk and streams the response back
+
+**Key repo components — a code atlas:**
+
+| Layer | Components | What they do |
+|---|---|---|
+| Management | `mgmt-ui`, `mgmt-api` | Angular UI + Ruby/Sinatra REST API |
+| Gateway / Data path | `nginx-gw`, `cache-svc` | S3 entry point, load balancing, object cache |
+| Storage engine | `ade`, `chunk`, `dmv`, `rsm` | LDR, chunk I/O, data movement, replication |
+| Config & metadata | `mi`, `gator`, `gpt2`, Cassandra | Bundle distribution, provisioning, accounts |
+| Observability | prometheus, grafana, alertmanager, `audit-analysis` | Metrics, dashboards, alerts, audit logs |
+| Platform | `stem-cell`, `container-services`, `servermanager` | Node images, container workloads — all on Debian |
+
+---
+
 ## Proposed Five-Phase Flow
 
 ### Phase 0 — Before Day 1 (Buddy/Manager sends this)
@@ -104,7 +140,8 @@ The existing onboarding is thorough but front-loads too much at once — admin s
 
 | Resource | Format | Time | What You'll Learn |
 |---|---|---|---|
-| Grid Primer (latest docs) | Reading | 45 min | Nodes, tenants, ILM overview |
+| **Architecture Overview** — Executive Summary + Sections 2 & 3 | Reading + diagrams | 20 min | How the whole system fits together; node types and what runs where |
+| Grid Primer (latest docs) | Reading | 45 min | Nodes, tenants, ILM — operational detail behind the diagrams |
 | David Leung's SG fundamentals video | Video | ~45 min | Architecture, key design decisions |
 | Explore a reference grid (ICT) | Hands-on | 30 min | Grid Manager UI, tenants, ILM rules |
 | NB team onboarding Zoom recordings | Video | Pick 2-3 relevant ones | Feature-specific deep dives |
@@ -145,6 +182,7 @@ Modules 3 and 4 run sequentially — this order is correct. Improvements:
 - Dead link audit: replace all 11.2 doc links with the current version equivalent
 
 **Module 4 — S3 Basics:**
+- Before starting Module 4, revisit the S3 Data Path diagram in the Architecture section — it turns the CLI exercise from "follow these steps" into "I know which service is handling my request"
 - Add the AWS config symlink pattern earlier (it's a better practice than `aws configure` — bury the latter)
 - Add a "common S3 test patterns" section showing what MrClean tests look like in relation to these commands — closes the loop from the Git exercise
 

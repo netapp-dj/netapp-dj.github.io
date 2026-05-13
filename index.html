@@ -7,6 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,300&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
 <style>
 :root {
   --bg: #0b0b18;
@@ -289,11 +290,21 @@ footer{
   font-family:'JetBrains Mono',monospace;font-size:0.72rem;color:var(--text-muted);
 }
 
+/* ── Architecture section ── */
+.arch-intro{font-size:0.9rem;color:var(--text-muted);margin-bottom:1.4rem;line-height:1.7;}
+.arch-diagrams{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1rem;margin:1rem 0 1.5rem;}
+.arch-diagram-card{background:var(--bg-card);border:2px solid var(--border2);border-radius:12px;overflow:hidden;box-shadow:var(--shadow2);}
+.arch-diagram-title{font-family:'Fraunces',serif;font-size:0.95rem;color:var(--accent2);padding:0.65rem 1rem;border-bottom:1px solid var(--border2);font-weight:600;}
+.arch-diagram-takeaway{font-size:0.78rem;color:var(--text-muted);padding:0.5rem 1rem 0.7rem;border-top:1px solid var(--border2);font-style:italic;background:var(--bg-surface);}
+.arch-diagram-body{padding:0.8rem;overflow-x:auto;background:#ffffff;}
+.mermaid svg{max-width:100%;height:auto;}
+
 /* ── Responsive ── */
 @media(max-width:600px){
   header h1{font-size:2rem;}
   .phase-dot{width:28px;height:28px;font-size:0.6rem;}
   .phase-line{width:42px;}
+  .arch-diagrams{grid-template-columns:1fr;}
 }
 </style>
 </head>
@@ -383,6 +394,128 @@ footer{
     </tr>
   </tbody>
 </table>
+
+<hr class="divider">
+
+<!-- ══════════════════════════════════════════════════
+     ARCHITECTURE
+══════════════════════════════════════════════════ -->
+<div class="section-title">🏗 Architecture at a Glance</div>
+<p class="arch-intro">
+  A new hire who understands how the pieces connect before touching any tooling will absorb Module 3 and Module 4 in a fraction of the time.
+  These three diagrams — drawn from the <strong>StorageGRID Repository Architecture Overview</strong> (SGWS Confluence, March 2026) — are the minimum mental model needed to make sense of what you're setting up.
+  The architecture doc itself recommends starting with the Executive Summary and the Layered Architecture before diving into component READMEs.
+</p>
+
+<div class="arch-diagrams">
+
+  <div class="arch-diagram-card">
+    <div class="arch-diagram-title">1 — System Context: Who talks to what</div>
+    <div class="arch-diagram-body">
+      <pre class="mermaid">
+flowchart TB
+    subgraph Users["Users & Systems"]
+        Admin["Grid / Tenant Admins"]
+        S3Client["S3 Clients (Apps, SDKs)"]
+    end
+    subgraph SG["StorageGRID"]
+        subgraph Mgmt["Management Plane"]
+            UI["Management UI"]
+            API["Management API"]
+        end
+        subgraph DP["Data Plane"]
+            GW["Gateway / Load Balancer"]
+            Storage["Storage Nodes (LDR)"]
+        end
+    end
+    Admin -->|"HTTPS"| UI
+    UI -->|"REST"| API
+    S3Client -->|"S3 (HTTPS)"| GW
+    GW -->|"S3 + internal"| Storage
+    style Mgmt fill:#e8f4f8,stroke:#90cad8
+    style DP fill:#f0f8e8,stroke:#90c890
+      </pre>
+    </div>
+    <div class="arch-diagram-takeaway">Two entry points: Management (UI + API) for admins, Data plane (Gateway → Storage) for S3 traffic.</div>
+  </div>
+
+  <div class="arch-diagram-card">
+    <div class="arch-diagram-title">2 — Node Types: What runs where</div>
+    <div class="arch-diagram-body">
+      <pre class="mermaid">
+flowchart LR
+    subgraph AN["Admin Node"]
+        direction TB
+        a1["mgmt-ui"]
+        a2["mgmt-api"]
+        a3["gpt2 / provisioning"]
+        a4["mi (config bundles)"]
+        a5["MySQL"]
+    end
+    subgraph GN["Gateway Node"]
+        direction TB
+        g1["nginx-gw (S3 LB)"]
+        g2["cache-svc"]
+    end
+    subgraph SN["Storage Node"]
+        direction TB
+        s1["LDR (ade)"]
+        s2["chunk storage"]
+        s3["Cassandra"]
+    end
+    Client["S3 / Admin clients"] --> GN
+    AN <-->|"config + API"| GN
+    GN <-->|"S3, internal"| SN
+    AN <-->|"bundles, accounts"| SN
+      </pre>
+    </div>
+    <div class="arch-diagram-takeaway">Admin = brain + API &nbsp;·&nbsp; Gateway = S3 front door &nbsp;·&nbsp; Storage = data + metadata on disk and in Cassandra.</div>
+  </div>
+
+  <div class="arch-diagram-card">
+    <div class="arch-diagram-title">3 — S3 Data Path: A request end-to-end</div>
+    <div class="arch-diagram-body">
+      <pre class="mermaid">
+sequenceDiagram
+    participant C as S3 Client
+    participant GW as nginx-gw
+    participant Cache as cache-svc
+    participant LDR as LDR (Storage)
+    participant Cass as Cassandra
+
+    C->>GW: GetObject (S3)
+    alt Cache hit
+        GW->>Cache: lookup
+        Cache-->>GW: cached object
+        GW-->>C: response
+    else Cache miss
+        GW->>LDR: forward request
+        LDR->>Cass: metadata lookup
+        Cass-->>LDR: location + metadata
+        LDR->>LDR: read chunks
+        LDR-->>GW: object data
+        GW-->>C: response
+    end
+      </pre>
+    </div>
+    <div class="arch-diagram-takeaway">When you run <code>aws s3api get-object</code> in Module 4, this is what happens inside the grid.</div>
+  </div>
+
+</div>
+
+<div class="sub-label">Key repo components — a code atlas</div>
+<table class="mini-table" style="margin-bottom:0.5rem;">
+  <thead><tr><th>Layer</th><th>Components</th><th>What they do</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Management</strong></td><td><code>mgmt-ui</code>, <code>mgmt-api</code></td><td>Angular UI + Ruby/Sinatra REST API for grid and tenant admin</td></tr>
+    <tr><td><strong>Gateway / Data path</strong></td><td><code>nginx-gw</code>, <code>cache-svc</code></td><td>S3 entry point, load balancing, optional object cache</td></tr>
+    <tr><td><strong>Storage engine</strong></td><td><code>ade</code>, <code>chunk</code>, <code>dmv</code>, <code>rsm</code></td><td>LDR (object I/O), chunk storage, data movement, replication</td></tr>
+    <tr><td><strong>Config & metadata</strong></td><td><code>mi</code>, <code>gator</code>, <code>gpt2</code>, Cassandra</td><td>Bundle distribution, provisioning, scale-out metadata (accounts)</td></tr>
+    <tr><td><strong>Observability</strong></td><td>prometheus, grafana, alertmanager, <code>audit-analysis</code></td><td>Metrics, dashboards, alerts, audit log parsing</td></tr>
+    <tr><td><strong>Platform</strong></td><td><code>stem-cell</code>, <code>container-services</code>, <code>servermanager</code></td><td>Node images, container workloads, node lifecycle — all on Debian</td></tr>
+  </tbody>
+</table>
+<p style="font-size:0.78rem;color:var(--text-muted);margin-bottom:0.5rem;">Many other components (bel, btl, dse, idnt, leakd, snmp, upgrade…) support specific features — this table is a starting map, not an exhaustive list.</p>
 
 <hr class="divider">
 
@@ -586,7 +719,8 @@ footer{
           <table class="mini-table">
             <thead><tr><th>Resource</th><th>Format</th><th>Time</th><th>What you'll learn</th></tr></thead>
             <tbody>
-              <tr><td>Grid Primer (latest docs)</td><td>Reading</td><td>45 min</td><td>Nodes, tenants, ILM overview</td></tr>
+              <tr><td><strong>Architecture Overview</strong> — Executive Summary + Sections 2 &amp; 3</td><td>Reading + diagrams</td><td>20 min</td><td>How the whole system fits together; node types and what runs where</td></tr>
+              <tr><td>Grid Primer (latest docs)</td><td>Reading</td><td>45 min</td><td>Nodes, tenants, ILM — operational detail behind the diagrams</td></tr>
               <tr><td>David Leung's SG fundamentals</td><td>Video</td><td>~45 min</td><td>Architecture, key design decisions</td></tr>
               <tr><td>Explore a reference grid (ICT)</td><td>Hands-on</td><td>30 min</td><td>Grid Manager UI, tenants, ILM rules</td></tr>
               <tr><td>NB team onboarding recordings</td><td>Video</td><td>Pick 2–3</td><td>Feature-specific deep dives</td></tr>
@@ -705,6 +839,10 @@ footer{
               <span class="step-text">Replace all 11.2 doc links with the latest version equivalent</span>
             </li>
           </ul>
+          <div class="callout nonai">
+            <div class="callout-label">💡 Before starting Module 4 — revisit the S3 Data Path diagram</div>
+            Diagram 3 in the Architecture section above shows exactly what happens inside the grid when you run <code>aws s3api get-object</code>. Reading it before the S3 Basics module turns the CLI exercise from "follow these steps" into "I know which service is handling my request at each step."
+          </div>
           <div class="sub-label">Module 4 improvements</div>
           <ul class="phase-steps">
             <li>
@@ -996,6 +1134,9 @@ footer{
 </div><!-- /container -->
 
 <script>
+// Mermaid
+mermaid.initialize({ startOnLoad: true, theme: 'neutral', securityLevel: 'loose' });
+
 // Theme
 function toggleTheme() {
   const h = document.documentElement;
