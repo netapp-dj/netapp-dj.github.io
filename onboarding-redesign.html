@@ -1,0 +1,1039 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SG Onboarding Redesign</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,300&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0b0b18;
+  --bg-surface: #13131f;
+  --bg-card: #181828;
+  --accent: #ff6b6b;
+  --accent2: #6bb5ff;
+  --accent3: #6bffb5;
+  --accent-ai: #a78bfa;
+  --accent-ai-dim: rgba(167,139,250,0.1);
+  --accent-ai-border: rgba(167,139,250,0.3);
+  --accent-ai-shadow: rgba(167,139,250,0.25);
+  --accent-dim: rgba(255,107,107,0.12);
+  --accent2-dim: rgba(107,181,255,0.12);
+  --accent3-dim: rgba(107,255,181,0.12);
+  --text: #e8e8f0;
+  --text-muted: #888899;
+  --border: rgba(255,107,107,0.22);
+  --border2: rgba(107,181,255,0.22);
+  --border3: rgba(107,255,181,0.22);
+  --shadow: 4px 4px 0 rgba(255,107,107,0.35);
+  --shadow2: 4px 4px 0 rgba(107,181,255,0.35);
+  --shadow3: 4px 4px 0 rgba(107,255,181,0.35);
+}
+[data-theme="light"] {
+  --bg: #f5f4ee;
+  --bg-surface: #eceae0;
+  --bg-card: #ffffff;
+  --accent: #d94f4f;
+  --accent2: #2970cc;
+  --accent3: #1a9e6e;
+  --accent-ai: #7c3aed;
+  --accent-ai-dim: rgba(124,58,237,0.08);
+  --accent-ai-border: rgba(124,58,237,0.28);
+  --accent-ai-shadow: rgba(124,58,237,0.2);
+  --accent-dim: rgba(217,79,79,0.08);
+  --accent2-dim: rgba(41,112,204,0.08);
+  --accent3-dim: rgba(26,158,110,0.08);
+  --text: #1a1a2e;
+  --text-muted: #666677;
+  --border: rgba(217,79,79,0.28);
+  --border2: rgba(41,112,204,0.28);
+  --border3: rgba(26,158,110,0.28);
+  --shadow: 4px 4px 0 rgba(217,79,79,0.28);
+  --shadow2: 4px 4px 0 rgba(41,112,204,0.28);
+  --shadow3: 4px 4px 0 rgba(26,158,110,0.28);
+}
+
+*{box-sizing:border-box;margin:0;padding:0;}
+
+body{
+  font-family:'Inter',sans-serif;
+  font-size:17px;
+  background:var(--bg);
+  color:var(--text);
+  min-height:100vh;
+  padding:2rem 1rem 6rem;
+  line-height:1.6;
+}
+
+.container{max-width:1200px;margin:0 auto;}
+
+/* ── Header ── */
+header{text-align:center;margin-bottom:3rem;}
+header h1{
+  font-family:'Fraunces',serif;
+  font-size:2.8rem;
+  color:var(--accent);
+  line-height:1.15;
+  margin-bottom:0.3rem;
+}
+header p.sub{
+  color:var(--text-muted);
+  font-style:italic;
+  font-size:0.97rem;
+  margin-bottom:1rem;
+}
+.meta-row{
+  display:flex;gap:1rem;align-items:center;justify-content:center;flex-wrap:wrap;
+  font-family:'JetBrains Mono',monospace;font-size:0.78rem;color:var(--text-muted);
+}
+.pill{
+  padding:0.25rem 0.7rem;
+  border:1px solid var(--border);
+  border-radius:255px 8px 225px 8px/8px 225px 8px 255px;
+}
+
+/* ── Theme toggle ── */
+.theme-toggle{
+  background:none;border:1px solid var(--border);color:var(--text-muted);
+  font-family:'JetBrains Mono',monospace;font-size:0.75rem;padding:0.3rem 0.8rem;
+  border-radius:255px 8px 225px 8px/8px 225px 8px 255px;cursor:pointer;
+  transition:color 0.2s,border-color 0.2s;
+}
+.theme-toggle:hover{color:var(--accent);border-color:var(--accent);}
+
+/* ── Section heading ── */
+.section-title{
+  font-family:'Fraunces',serif;font-size:1.5rem;color:var(--accent);
+  margin:3rem 0 1.2rem;opacity:0.85;
+  display:flex;align-items:center;gap:0.6rem;
+}
+
+/* ── Problems table ── */
+.problems-table{width:100%;border-collapse:collapse;margin-bottom:1rem;}
+.problems-table th{
+  font-family:'JetBrains Mono',monospace;font-size:0.7rem;letter-spacing:0.08em;
+  text-transform:uppercase;color:var(--text-muted);padding:0.5rem 0.8rem;
+  border-bottom:2px solid var(--border);text-align:left;
+}
+.problems-table td{
+  padding:0.7rem 0.8rem;border-bottom:1px solid rgba(255,255,255,0.05);
+  font-size:0.88rem;vertical-align:top;
+}
+.problems-table tr:hover td{background:var(--accent-dim);}
+.loc-tag{
+  font-family:'JetBrains Mono',monospace;font-size:0.72rem;color:var(--accent);
+  background:var(--accent-dim);padding:0.15rem 0.4rem;border-radius:4px;white-space:nowrap;
+}
+
+/* ── Timeline ── */
+.timeline{display:flex;flex-direction:column;gap:0;}
+
+.phase-wrapper{display:flex;gap:0;position:relative;}
+.phase-line{
+  display:flex;flex-direction:column;align-items:center;width:56px;flex-shrink:0;
+}
+.phase-dot{
+  width:36px;height:36px;border-radius:50%;
+  border:2px solid var(--accent);background:var(--bg-card);
+  display:flex;align-items:center;justify-content:center;
+  font-family:'JetBrains Mono',monospace;font-size:0.72rem;color:var(--accent);
+  font-weight:600;flex-shrink:0;z-index:1;margin-top:1.4rem;
+}
+.phase-connector{
+  width:2px;background:var(--border);flex:1;margin-top:4px;min-height:20px;
+}
+.phase-connector.last{display:none;}
+
+.phase-body{flex:1;padding:1.2rem 0 1.8rem 0.5rem;}
+
+/* ── Phase card ── */
+.phase-card{
+  background:var(--bg-card);
+  border:2px solid var(--border);
+  border-radius:15px 255px 15px 225px/225px 15px 255px 15px;
+  box-shadow:var(--shadow);
+  overflow:hidden;
+}
+.phase-card.blue{border-color:var(--border2);box-shadow:var(--shadow2);}
+.phase-card.green{border-color:var(--border3);box-shadow:var(--shadow3);}
+
+.phase-header{
+  display:flex;align-items:flex-start;gap:0.8rem;padding:1.1rem 1.4rem;
+  cursor:pointer;user-select:none;
+}
+.phase-header:hover .phase-title{color:var(--accent);}
+.phase-card.blue .phase-header:hover .phase-title{color:var(--accent2);}
+.phase-card.green .phase-header:hover .phase-title{color:var(--accent3);}
+
+.phase-timing{
+  font-family:'JetBrains Mono',monospace;font-size:0.7rem;
+  background:var(--accent-dim);color:var(--accent);
+  padding:0.2rem 0.6rem;border-radius:255px 8px/8px 255px;
+  white-space:nowrap;flex-shrink:0;margin-top:0.2rem;
+}
+.phase-card.blue .phase-timing{background:var(--accent2-dim);color:var(--accent2);}
+.phase-card.green .phase-timing{background:var(--accent3-dim);color:var(--accent3);}
+
+.phase-title-wrap{flex:1;}
+.phase-title{
+  font-family:'Fraunces',serif;font-size:1.25rem;color:var(--text);
+  transition:color 0.15s;line-height:1.2;
+}
+.phase-goal{color:var(--text-muted);font-size:0.84rem;margin-top:0.3rem;font-style:italic;}
+
+.chevron{
+  color:var(--text-muted);font-size:0.9rem;margin-top:0.4rem;flex-shrink:0;
+  transition:transform 0.2s;
+}
+.phase-header[aria-expanded="true"] .chevron{transform:rotate(90deg);}
+
+.phase-content{padding:0 1.4rem 1.4rem;display:none;}
+.phase-content.open{display:block;}
+
+/* ── Items in phase ── */
+.phase-steps{list-style:none;display:flex;flex-direction:column;gap:0.45rem;margin-bottom:1rem;}
+.phase-steps li{
+  display:flex;align-items:flex-start;gap:0.6rem;font-size:0.88rem;
+}
+.step-check{
+  width:16px;height:16px;border:1.5px solid var(--border);border-radius:3px;
+  flex-shrink:0;margin-top:0.15rem;cursor:pointer;display:flex;align-items:center;
+  justify-content:center;transition:background 0.15s,border-color 0.15s;
+}
+.step-check.checked{background:var(--accent);border-color:var(--accent);}
+.phase-card.blue .step-check.checked{background:var(--accent2);border-color:var(--accent2);}
+.phase-card.green .step-check.checked{background:var(--accent3);border-color:var(--accent3);}
+.step-check.checked::after{content:"✓";color:#fff;font-size:0.6rem;font-weight:700;}
+.step-text{line-height:1.45;}
+.step-text s{color:var(--text-muted);}
+
+.sub-label{
+  font-family:'JetBrains Mono',monospace;font-size:0.65rem;letter-spacing:0.08em;
+  text-transform:uppercase;color:var(--text-muted);margin:1rem 0 0.5rem;
+}
+
+/* ── AI + Non-AI callout boxes ── */
+.callout{
+  border-left:3px solid var(--accent);
+  background:var(--accent-dim);
+  border-radius:0 8px 8px 0;
+  padding:0.75rem 1rem;
+  margin:0.8rem 0;
+  font-size:0.86rem;
+}
+.callout.ai{border-color:var(--accent-ai);background:var(--accent-ai-dim);}
+.callout.nonai{border-color:var(--accent3);background:var(--accent3-dim);}
+.callout-label{
+  font-family:'JetBrains Mono',monospace;font-size:0.62rem;letter-spacing:0.1em;
+  text-transform:uppercase;font-weight:600;margin-bottom:0.3rem;
+}
+.callout.ai .callout-label{color:#a78bfa;}
+.callout.nonai .callout-label{color:var(--accent3);}
+
+/* ── Mini table ── */
+.mini-table{width:100%;border-collapse:collapse;margin:0.6rem 0 1rem;font-size:0.84rem;}
+.mini-table th{
+  font-family:'JetBrains Mono',monospace;font-size:0.65rem;text-transform:uppercase;
+  letter-spacing:0.06em;color:var(--text-muted);padding:0.4rem 0.6rem;
+  border-bottom:1px solid var(--border);text-align:left;
+}
+.mini-table td{padding:0.5rem 0.6rem;border-bottom:1px solid rgba(255,255,255,0.04);}
+.mini-table tr:last-child td{border-bottom:none;}
+.mini-table tr:hover td{background:rgba(255,255,255,0.03);}
+.effort-high{color:var(--accent);}
+.effort-med{color:#fbbf24;}
+.effort-low{color:var(--accent3);}
+.done-tag{color:var(--accent3);font-family:'JetBrains Mono',monospace;font-size:0.7rem;}
+
+/* ── AI summary section ── */
+.ai-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1rem;margin:1rem 0;}
+.ai-card{
+  background:var(--bg-card);
+  border:2px solid var(--accent-ai-border);
+  border-radius:255px 15px 225px 15px/15px 225px 15px 255px;
+  box-shadow:4px 4px 0 var(--accent-ai-shadow);
+  padding:1rem 1.1rem;
+}
+.ai-card-title{
+  font-family:'Fraunces',serif;font-size:1rem;color:var(--accent-ai);margin-bottom:0.4rem;
+}
+.ai-card-body{font-size:0.83rem;color:var(--text-muted);line-height:1.5;}
+.ai-card-badges{display:flex;gap:0.4rem;margin-top:0.6rem;flex-wrap:wrap;}
+.badge{
+  font-family:'JetBrains Mono',monospace;font-size:0.62rem;
+  padding:0.15rem 0.5rem;border-radius:4px;
+}
+.badge.effort-h{background:rgba(255,107,107,0.15);color:var(--accent);}
+.badge.effort-m{background:rgba(251,191,36,0.15);color:#fbbf24;}
+.badge.effort-l{background:var(--accent3-dim);color:var(--accent3);}
+.badge.impact{background:var(--accent-ai-dim);color:var(--accent-ai);}
+.badge.done{background:var(--accent3-dim);color:var(--accent3);}
+
+/* ── Keep section ── */
+.keep-list{display:flex;flex-direction:column;gap:0.5rem;}
+.keep-item{
+  display:flex;align-items:flex-start;gap:0.6rem;font-size:0.88rem;
+}
+.keep-icon{color:var(--accent3);font-size:0.9rem;margin-top:0.05rem;flex-shrink:0;}
+
+/* ── Divider ── */
+.divider{
+  border:none;border-top:1px solid rgba(255,255,255,0.06);margin:2rem 0;
+}
+
+/* ── Footer ── */
+footer{
+  margin-top:4rem;text-align:center;
+  font-family:'JetBrains Mono',monospace;font-size:0.72rem;color:var(--text-muted);
+}
+
+/* ── Responsive ── */
+@media(max-width:600px){
+  header h1{font-size:2rem;}
+  .phase-dot{width:28px;height:28px;font-size:0.6rem;}
+  .phase-line{width:42px;}
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+
+<header>
+  <h1>StorageGRID Onboarding — Redesign</h1>
+  <p class="sub">Fewer firehoses, more flow</p>
+  <div class="meta-row">
+    <span class="pill">Author: DJ &mdash; Reviewer: Claude</span>
+    <span class="pill">2026-05-13</span>
+    <span class="pill">Based on: SGWS/pages/292749763 + child pages</span>
+    <button class="theme-toggle" onclick="toggleTheme()">toggle theme</button>
+  </div>
+</header>
+
+<!-- ══════════════════════════════════════════════════
+     PROBLEMS
+══════════════════════════════════════════════════ -->
+<div class="section-title">⚠ What's Wrong With the Current Flow</div>
+
+<table class="problems-table">
+  <thead>
+    <tr>
+      <th>Problem</th>
+      <th>Where</th>
+      <th>Impact</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Day 1 is 12+ steps with no urgency ranking — printers compete with MFA</td>
+      <td><span class="loc-tag">Main §2</span></td>
+      <td>Decision fatigue on the most overwhelming day</td>
+    </tr>
+    <tr>
+      <td>Terminology dumped as a wall of text before the product is touched</td>
+      <td><span class="loc-tag">Terminology pages</span></td>
+      <td>Memorisation without meaning — forgotten by Week 2</td>
+    </tr>
+    <tr>
+      <td>Product intro is just links, no narrative or curated sequence</td>
+      <td><span class="loc-tag">Main §3–4</span></td>
+      <td>New hire has no mental model before diving into modules</td>
+    </tr>
+    <tr>
+      <td>QA vs Dev track split happens at Module 4+ — too late</td>
+      <td><span class="loc-tag">QA/Dev Modules</span></td>
+      <td>QA new hires do generic setup without role context</td>
+    </tr>
+    <tr>
+      <td>Module 3 references SG 11.2 docs and dead Confluence/wikid URLs</td>
+      <td><span class="loc-tag">Module 3 §2</span></td>
+      <td>Wrong links → confusion → buddy interrupt</td>
+    </tr>
+    <tr>
+      <td>Videos listed without durations, dead links, no curation</td>
+      <td><span class="loc-tag">Main §4</span></td>
+      <td>Nobody watches them</td>
+    </tr>
+    <tr>
+      <td>"Ask your buddy" appears ~20× with no buddy prep guide</td>
+      <td><span class="loc-tag">Throughout</span></td>
+      <td>Buddies get the same questions every cohort</td>
+    </tr>
+    <tr>
+      <td>No explicit daily/weekly pacing</td>
+      <td><span class="loc-tag">Entire doc set</span></td>
+      <td>No sense of progress — hard to know if you're behind</td>
+    </tr>
+    <tr>
+      <td>GenAI tools buried in a table cell</td>
+      <td><span class="loc-tag">Main §2.1</span></td>
+      <td>Missed entirely — biggest missed opportunity</td>
+    </tr>
+    <tr>
+      <td>VTC-specific content not flagged for other sites (RTP, NB)</td>
+      <td><span class="loc-tag">§2 printers, lists</span></td>
+      <td>RTP and Bangalore new hires get confused</td>
+    </tr>
+    <tr>
+      <td>Cassandra and s3tester in onboarding modules — these are Week 4+ topics</td>
+      <td><span class="loc-tag">QA Module 2</span></td>
+      <td>Overwhelming before the basics are solid</td>
+    </tr>
+  </tbody>
+</table>
+
+<hr class="divider">
+
+<!-- ══════════════════════════════════════════════════
+     TIMELINE
+══════════════════════════════════════════════════ -->
+<div class="section-title">🗓 Proposed Five-Phase Flow</div>
+
+<div class="timeline">
+
+  <!-- ─── Phase 0 ─── -->
+  <div class="phase-wrapper">
+    <div class="phase-line">
+      <div class="phase-dot">P0</div>
+      <div class="phase-connector"></div>
+    </div>
+    <div class="phase-body">
+      <div class="phase-card">
+        <div class="phase-header" onclick="togglePhase(this)" aria-expanded="false">
+          <div class="phase-timing">Before Day 1</div>
+          <div class="phase-title-wrap">
+            <div class="phase-title">Pre-Arrival Brief</div>
+            <div class="phase-goal">New hire arrives with mental model already forming — not starting cold</div>
+          </div>
+          <div class="chevron">▶</div>
+        </div>
+        <div class="phase-content">
+          <div class="sub-label">Buddy / Manager sends ahead</div>
+          <ul class="phase-steps">
+            <li>
+              <div class="step-check" onclick="toggleCheck(this)" data-id="p0-1"></div>
+              <span class="step-text">Send a single-page "What to expect on Day 1" brief (not the full Confluence page)</span>
+            </li>
+            <li>
+              <div class="step-check" onclick="toggleCheck(this)" data-id="p0-2"></div>
+              <span class="step-text">Link to the Grid Primer — it works outside VPN and is a 45-minute read</span>
+            </li>
+            <li>
+              <div class="step-check" onclick="toggleCheck(this)" data-id="p0-3"></div>
+              <span class="step-text">Share David Leung's intro video — the one product overview everyone should see</span>
+            </li>
+            <li>
+              <div class="step-check" onclick="toggleCheck(this)" data-id="p0-4"></div>
+              <span class="step-text">Pre-submit access requests: Bitbucket, Mantis, Jira — these take days</span>
+            </li>
+            <li>
+              <div class="step-check" onclick="toggleCheck(this)" data-id="p0-5"></div>
+              <span class="step-text">Reserve a block of ICT/RTP IPs so the new hire is unblocked on Module 3</span>
+            </li>
+          </ul>
+          <div class="callout ai">
+            <div class="callout-label">✦ AI Opportunity</div>
+            Generate a personalised "skills mapping" brief using the new hire's resume and Claude.
+            e.g. <em>"You know Kubernetes distributed state — here's how StorageGRID's Cassandra metadata cluster is conceptually similar."</em>
+            A 1-page custom orientation document rather than a generic welcome letter.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── Phase 1 ─── -->
+  <div class="phase-wrapper">
+    <div class="phase-line">
+      <div class="phase-dot">P1</div>
+      <div class="phase-connector"></div>
+    </div>
+    <div class="phase-body">
+      <div class="phase-card">
+        <div class="phase-header" onclick="togglePhase(this)" aria-expanded="false">
+          <div class="phase-timing">Day 1 AM</div>
+          <div class="phase-title-wrap">
+            <div class="phase-title">Human Setup — Urgent Blockers Only</div>
+            <div class="phase-goal">Get connected to people and systems. No technical setup yet.</div>
+          </div>
+          <div class="chevron">▶</div>
+        </div>
+        <div class="phase-content">
+          <div class="sub-label">Must do before lunch</div>
+          <ul class="phase-steps">
+            <li>
+              <div class="step-check" onclick="toggleCheck(this)" data-id="p1-1"></div>
+              <span class="step-text">ID badge (WPR)</span>
+            </li>
+            <li>
+              <div class="step-check" onclick="toggleCheck(this)" data-id="p1-2"></div>
+              <span class="step-text">Initial password change (blocks everything else)</span>
+            </li>
+            <li>
+              <div class="step-check" onclick="toggleCheck(this)" data-id="p1-3"></div>
+              <span class="step-text">MFA enrollment — needed for VED access</span>
+            </li>
+            <li>
+              <div class="step-check" onclick="toggleCheck(this)" data-id="p1-4"></div>
+              <span class="step-text">Laptop enrollment (macOS: Self Service App)</span>
+            </li>
+          </ul>
+          <div class="sub-label">Before end of Day 1</div>
+          <ul class="phase-steps">
+            <li>
+              <div class="step-check" onclick="toggleCheck(this)" data-id="p1-5"></div>
+              <span class="step-text">Buddy intro + office tour</span>
+            </li>
+            <li>
+              <div class="step-check" onclick="toggleCheck(this)" data-id="p1-6"></div>
+              <span class="step-text">Team introductions</span>
+            </li>
+            <li>
+              <div class="step-check" onclick="toggleCheck(this)" data-id="p1-7"></div>
+              <span class="step-text">Join Teams channel: StorageGRID + your scrum team's channel</span>
+            </li>
+            <li>
+              <div class="step-check" onclick="toggleCheck(this)" data-id="p1-8"></div>
+              <span class="step-text">Join mailing list: <code>ng-sg-&lt;your team&gt;</code></span>
+            </li>
+            <li>
+              <div class="step-check" onclick="toggleCheck(this)" data-id="p1-9"></div>
+              <span class="step-text">Bookmark: MyNetApp, HR portal, Canada/local Benefits, IT Front Door</span>
+            </li>
+          </ul>
+          <div class="sub-label">Defer to Day 2 or later</div>
+          <ul class="phase-steps">
+            <li><div class="step-check" style="border-color:rgba(136,136,153,0.3)"></div><span class="step-text" style="color:var(--text-muted)">Printers, Zoom SoftPhone, Outlook rules, shell default (csh→bash)</span></li>
+          </ul>
+          <div class="callout ai">
+            <div class="callout-label">✦ AI Opportunity</div>
+            An AI onboarding chatbot (Claude-backed, RAG on SGWS Confluence) answers "what's the Jira URL?", "who's the QA manager?", "how do I reserve IPs?" — so the buddy isn't interrupted every 15 minutes while the new hire is still setting up their laptop.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── Phase 2 ─── -->
+  <div class="phase-wrapper">
+    <div class="phase-line">
+      <div class="phase-dot">P2</div>
+      <div class="phase-connector"></div>
+    </div>
+    <div class="phase-body">
+      <div class="phase-card blue">
+        <div class="phase-header" onclick="togglePhase(this)" aria-expanded="false">
+          <div class="phase-timing">Day 2–3</div>
+          <div class="phase-title-wrap">
+            <div class="phase-title">Development Environment — Role Split Starts Here</div>
+            <div class="phase-goal">Get into the lab. Know your tools. Make your first SSH connection.</div>
+          </div>
+          <div class="chevron">▶</div>
+        </div>
+        <div class="phase-content">
+          <div class="sub-label">Choose your path (ask buddy)</div>
+          <table class="mini-table">
+            <thead><tr><th>Step</th><th>QA</th><th>Dev</th></tr></thead>
+            <tbody>
+              <tr><td>VED vs BigTop</td><td>BigTop (more common for QA)</td><td>Either — ask buddy</td></tr>
+              <tr><td>Compute access</td><td>Shared QA runner (SSH)</td><td>Cycl server</td></tr>
+              <tr><td>Shell default</td><td>bash (email enghelp)</td><td>Same</td></tr>
+              <tr><td>First repo to clone</td><td>mrclean</td><td>storagegrid</td></tr>
+            </tbody>
+          </table>
+
+          <div class="sub-label">Curated tool bookmarks (6, not 20)</div>
+          <table class="mini-table">
+            <thead><tr><th>Tool</th><th>Why you need it</th></tr></thead>
+            <tbody>
+              <tr><td>Jira</td><td>Your sprint work lives here</td></tr>
+              <tr><td>Bitbucket</td><td>All code and PRs</td></tr>
+              <tr><td>OpenGrok</td><td>Search codebase without cloning everything</td></tr>
+              <tr><td>Jenkins</td><td>Automated tests run on your PRs automatically</td></tr>
+              <tr><td>Mantis</td><td>Bug tracking spanning multiple releases</td></tr>
+              <tr><td>Confluence (SGWS)</td><td>Team documentation home</td></tr>
+            </tbody>
+          </table>
+          <div class="callout nonai">
+            <div class="callout-label">✦ Non-AI Improvement</div>
+            A validation script new hires run on their first day on the runner: checks that Jira, Bitbucket, Mantis, Jenkins, OpenGrok are all reachable; verifies git config, checks <code>aws</code> and <code>ruby</code> are installed. Outputs green/red per tool. Eliminates the "I wasn't sure if my access worked" ambiguity.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── Phase 3 ─── -->
+  <div class="phase-wrapper">
+    <div class="phase-line">
+      <div class="phase-dot">P3</div>
+      <div class="phase-connector"></div>
+    </div>
+    <div class="phase-body">
+      <div class="phase-card blue">
+        <div class="phase-header" onclick="togglePhase(this)" aria-expanded="false">
+          <div class="phase-timing">Day 3–4</div>
+          <div class="phase-title-wrap">
+            <div class="phase-title">Product Understanding First, Modules Second</div>
+            <div class="phase-goal">Build a mental model before touching the product's internals. Context makes everything stick.</div>
+          </div>
+          <div class="chevron">▶</div>
+        </div>
+        <div class="phase-content">
+          <div class="sub-label">Curated learning sequence (replace the unstructured video section)</div>
+          <table class="mini-table">
+            <thead><tr><th>Resource</th><th>Format</th><th>Time</th><th>What you'll learn</th></tr></thead>
+            <tbody>
+              <tr><td>Grid Primer (latest docs)</td><td>Reading</td><td>45 min</td><td>Nodes, tenants, ILM overview</td></tr>
+              <tr><td>David Leung's SG fundamentals</td><td>Video</td><td>~45 min</td><td>Architecture, key design decisions</td></tr>
+              <tr><td>Explore a reference grid (ICT)</td><td>Hands-on</td><td>30 min</td><td>Grid Manager UI, tenants, ILM rules</td></tr>
+              <tr><td>NB team onboarding recordings</td><td>Video</td><td>Pick 2–3</td><td>Feature-specific deep dives</td></tr>
+            </tbody>
+          </table>
+
+          <div class="callout">
+            <div class="callout-label">💡 Why reference grid first, own grid later</div>
+            New hires can click around ILM, Tenants, and the Dashboard on a pre-built reference grid on Day 3 — building intuition before Module 3 asks them to install their own. Module 3 then feels like <em>confirming understanding</em> rather than navigating in the dark.
+          </div>
+
+          <div class="sub-label">Terminology — change the approach</div>
+          <ul class="phase-steps">
+            <li><div class="step-check" style="border-color:rgba(136,136,153,0.3);cursor:default"></div>
+              <span class="step-text">Keep the Initialisms and Key Terms pages — but as a <strong>contextual reference</strong>, linked from each module, not assigned as front-loaded required reading</span></li>
+            <li><div class="step-check" style="border-color:rgba(136,136,153,0.3);cursor:default"></div>
+              <span class="step-text">Add a "glossary" sidebar link to each module page</span></li>
+          </ul>
+          <div class="callout ai">
+            <div class="callout-label">✦ AI Opportunity</div>
+            AI-generated self-check quizzes after the primer read — 5 questions like <em>"What is the minimum number of storage nodes for data redundancy?"</em> with explanations. No grade, just reflection. Keeps learning active rather than passive. Trivial to generate with the Claude API given the primer text.
+          </div>
+          <div class="callout ai">
+            <div class="callout-label">✦ AI Opportunity</div>
+            Auto-summarise internal Zoom recordings (Whisper transcription → Claude summary) so new hires can scan a 2-paragraph summary before committing 45 minutes to a video. Dead links could be flagged automatically too.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── Phase 4 ─── -->
+  <div class="phase-wrapper">
+    <div class="phase-line">
+      <div class="phase-dot">P4</div>
+      <div class="phase-connector"></div>
+    </div>
+    <div class="phase-body">
+      <div class="phase-card">
+        <div class="phase-header" onclick="togglePhase(this)" aria-expanded="false">
+          <div class="phase-timing">Week 1, Days 4–5</div>
+          <div class="phase-title-wrap">
+            <div class="phase-title">Git Exercise + First Contribution</div>
+            <div class="phase-goal">Make your first real contribution. Understand the review culture.</div>
+          </div>
+          <div class="chevron">▶</div>
+        </div>
+        <div class="phase-content">
+          <p style="font-size:0.88rem;margin-bottom:0.8rem;">
+            The existing Module 2 is well-structured and has a real deliverable — keep the core but add these improvements:
+          </p>
+          <ul class="phase-steps">
+            <li>
+              <div class="step-check" onclick="toggleCheck(this)" data-id="p4-1"></div>
+              <span class="step-text">Add one paragraph contextualising <em>why MrClean exists</em> before the exercise: "This is the automation repo that verifies StorageGRID behaves correctly for customers — every test you write prevents a future bug."</span>
+            </li>
+            <li>
+              <div class="step-check" onclick="toggleCheck(this)" data-id="p4-2"></div>
+              <span class="step-text">Move the "good PR description" guidelines from §6.1 to the top — it's easy to miss when buried</span>
+            </li>
+            <li>
+              <div class="step-check" onclick="toggleCheck(this)" data-id="p4-3"></div>
+              <span class="step-text">Flag <code>jenkins run &lt;test&gt;</code> prominently — many new hires don't discover it until their first real PR</span>
+            </li>
+            <li>
+              <div class="step-check" onclick="toggleCheck(this)" data-id="p4-4"></div>
+              <span class="step-text">Add how to trigger a presub re-run (currently hidden in §3.5 of QA Module 1)</span>
+            </li>
+          </ul>
+          <div class="callout nonai">
+            <div class="callout-label">✦ Non-AI Improvement</div>
+            Create a <code>new-hire-checklist</code> branch in MrClean where <code>print_name.spec.rb</code> already has a well-commented example showing BDD structure, so the new hire understands the pattern before editing — not just a name in a list of names.
+          </div>
+          <div class="callout ai">
+            <div class="callout-label">✦ AI Opportunity (already in place)</div>
+            Claude Code PR review on MrClean PRs — validates test structure, flags common mistakes, suggests better assertions. This is already partially available; formalise it in the onboarding so new hires know to use it.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── Phase 5 ─── -->
+  <div class="phase-wrapper">
+    <div class="phase-line">
+      <div class="phase-dot">P5</div>
+      <div class="phase-connector"></div>
+    </div>
+    <div class="phase-body">
+      <div class="phase-card">
+        <div class="phase-header" onclick="togglePhase(this)" aria-expanded="false">
+          <div class="phase-timing">Week 2, Days 1–4</div>
+          <div class="phase-title-wrap">
+            <div class="phase-title">Your Grid + S3 Basics</div>
+            <div class="phase-goal">Own your development environment. Ingest your first object.</div>
+          </div>
+          <div class="chevron">▶</div>
+        </div>
+        <div class="phase-content">
+          <div class="sub-label">Module 3 improvements</div>
+          <ul class="phase-steps">
+            <li>
+              <div class="step-check" onclick="toggleCheck(this)" data-id="p5-1"></div>
+              <span class="step-text">Remove the "OUTDATED" banner — just replace the linked content directly. Readers shouldn't encounter deprecated headers in a live doc.</span>
+            </li>
+            <li>
+              <div class="step-check" onclick="toggleCheck(this)" data-id="p5-2"></div>
+              <span class="step-text">Add explicit <strong>VTC / RTP / NB</strong> tabs or callouts for site-specific steps (vSphere URLs, network ranges, QA runner hosts)</span>
+            </li>
+            <li>
+              <div class="step-check" onclick="toggleCheck(this)" data-id="p5-3"></div>
+              <span class="step-text">Emphasise <code>deploy_tools</code> as the primary path — position manual .ini/.json as optional deep-dive, not the default</span>
+            </li>
+            <li>
+              <div class="step-check" onclick="toggleCheck(this)" data-id="p5-4"></div>
+              <span class="step-text">Replace all 11.2 doc links with the latest version equivalent</span>
+            </li>
+          </ul>
+          <div class="sub-label">Module 4 improvements</div>
+          <ul class="phase-steps">
+            <li>
+              <div class="step-check" onclick="toggleCheck(this)" data-id="p5-5"></div>
+              <span class="step-text">Present the aws config symlink pattern first — it's the better practice. Move raw <code>aws configure</code> to a note.</span>
+            </li>
+            <li>
+              <div class="step-check" onclick="toggleCheck(this)" data-id="p5-6"></div>
+              <span class="step-text">Add a "common S3 test patterns" section linking back to Module 2 MrClean commands — closes the loop</span>
+            </li>
+          </ul>
+          <div class="callout ai">
+            <div class="callout-label">✦ AI Opportunity: Grid Doctor</div>
+            After grid installation, new hire pastes their admin IP into a script. An AI checks: grid health, storage node count, ILM policy validity, tenant existence, storage watermarks. Returns a structured "your grid looks healthy / here are 2 warnings" report. Replaces the vague "navigate and check out the features" instruction.
+          </div>
+          <div class="callout ai">
+            <div class="callout-label">✦ AI Opportunity: .ini/.json Editor Guard</div>
+            Before running the deploy scripts, an AI reads the new hire's .ini and .json files and flags: IP addresses not in their reserved range, duplicate IPs, missing required fields, wrong datastore names. Prevents the "you owe 30 people coffee" class of mistakes.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── Phase 6 ─── -->
+  <div class="phase-wrapper">
+    <div class="phase-line">
+      <div class="phase-dot">P6</div>
+      <div class="phase-connector last"></div>
+    </div>
+    <div class="phase-body">
+      <div class="phase-card green">
+        <div class="phase-header" onclick="togglePhase(this)" aria-expanded="false">
+          <div class="phase-timing">Week 2–3</div>
+          <div class="phase-title-wrap">
+            <div class="phase-title">Role Track Deep-Dive → Active Sprint Work</div>
+            <div class="phase-goal">Shadow the buddy. First solo ticket. First real contribution.</div>
+          </div>
+          <div class="chevron">▶</div>
+        </div>
+        <div class="phase-content">
+          <div class="sub-label">QA track</div>
+          <ul class="phase-steps">
+            <li>
+              <div class="step-check" onclick="toggleCheck(this)" data-id="p6-qa1"></div>
+              <span class="step-text">MrClean walkthrough with buddy — 1-hour live session, not a doc read</span>
+            </li>
+            <li>
+              <div class="step-check" onclick="toggleCheck(this)" data-id="p6-qa2"></div>
+              <span class="step-text">Run your first presub test against your own grid</span>
+            </li>
+            <li>
+              <div class="step-check" onclick="toggleCheck(this)" data-id="p6-qa3"></div>
+              <span class="step-text">Shadow nightly regression triage for one full day before doing it solo</span>
+            </li>
+            <li>
+              <div class="step-check" onclick="toggleCheck(this)" data-id="p6-qa4"></div>
+              <span class="step-text">Shadow a <code>resolved → qa → tested</code> Mantis cycle on a real ticket</span>
+            </li>
+            <li>
+              <div class="step-check" onclick="toggleCheck(this)" data-id="p6-qa5"></div>
+              <span class="step-text">Write your first new test (small scope — a new parameter on an existing test)</span>
+            </li>
+            <li>
+              <div class="step-check" onclick="toggleCheck(this)" data-id="p6-qa6"></div>
+              <span class="step-text">First solo PR to MrClean, with review from team</span>
+            </li>
+          </ul>
+          <div class="callout nonai">
+            <div class="callout-label">✦ Content to Move Out of Onboarding</div>
+            Cassandra internals, s3tester, advanced IO workload config (currently QA Module 2) — these are Week 4+ topics. Move them to a "QA Advanced Resources" page and link from QA Module 2 with a clear "come back to these" callout.
+          </div>
+
+          <div class="sub-label">Dev track</div>
+          <ul class="phase-steps">
+            <li>
+              <div class="step-check" onclick="toggleCheck(this)" data-id="p6-dev1"></div>
+              <span class="step-text">Clone and build the SG repo (Dev Module 1–2)</span>
+            </li>
+            <li>
+              <div class="step-check" onclick="toggleCheck(this)" data-id="p6-dev2"></div>
+              <span class="step-text">Grid setup on cycl server (Dev Module 3)</span>
+            </li>
+            <li>
+              <div class="step-check" onclick="toggleCheck(this)" data-id="p6-dev3"></div>
+              <span class="step-text">Read ADE introduction (Dev Module 5)</span>
+            </li>
+            <li>
+              <div class="step-check" onclick="toggleCheck(this)" data-id="p6-dev4"></div>
+              <span class="step-text">Shadow buddy through first sprint — pick up a sub-task to work alongside</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /timeline -->
+
+<hr class="divider">
+
+<!-- ══════════════════════════════════════════════════
+     AI SUMMARY
+══════════════════════════════════════════════════ -->
+<div class="section-title">✦ AI Opportunities — Full Summary</div>
+
+<div class="ai-grid">
+  <div class="ai-card">
+    <div class="ai-card-title">Personalised Skills Brief</div>
+    <div class="ai-card-body">Use the new hire's résumé + Claude to generate a 1-page "here's how what you know maps to StorageGRID" orientation. Kubernetes → Cassandra, S3 → tenants, etc.</div>
+    <div class="ai-card-badges">
+      <span class="badge effort-m">Medium effort</span>
+      <span class="badge impact">High impact</span>
+    </div>
+  </div>
+  <div class="ai-card">
+    <div class="ai-card-title">AI Onboarding Chatbot</div>
+    <div class="ai-card-body">Claude with RAG on SGWS Confluence. Answers routine new-hire questions 24/7. Buddy only gets the hard ones.</div>
+    <div class="ai-card-badges">
+      <span class="badge effort-h">High effort</span>
+      <span class="badge impact">High impact</span>
+    </div>
+  </div>
+  <div class="ai-card">
+    <div class="ai-card-title">Self-Check Quizzes</div>
+    <div class="ai-card-body">5-question active recall quiz generated from each module's content via Claude API. No grade — just reflection.</div>
+    <div class="ai-card-badges">
+      <span class="badge effort-l">Low effort</span>
+      <span class="badge impact">Medium impact</span>
+    </div>
+  </div>
+  <div class="ai-card">
+    <div class="ai-card-title">Video Summariser</div>
+    <div class="ai-card-body">Whisper transcription → Claude summary for each internal Zoom recording. New hires scan 2 paragraphs before committing 45 minutes.</div>
+    <div class="ai-card-badges">
+      <span class="badge effort-m">Medium effort</span>
+      <span class="badge impact">Medium impact</span>
+    </div>
+  </div>
+  <div class="ai-card">
+    <div class="ai-card-title">Grid Doctor Script</div>
+    <div class="ai-card-body">Paste admin IP → AI validates grid health, storage nodes, ILM policy, tenants, watermarks. Replaces vague "explore the UI" instruction.</div>
+    <div class="ai-card-badges">
+      <span class="badge effort-m">Medium effort</span>
+      <span class="badge impact">High impact</span>
+    </div>
+  </div>
+  <div class="ai-card">
+    <div class="ai-card-title">.ini/.json Editor Guard</div>
+    <div class="ai-card-body">Reads deployment config before running scripts. Flags IP conflicts, missing fields, wrong datastores. Prevents "30 people need coffee" incidents.</div>
+    <div class="ai-card-badges">
+      <span class="badge effort-m">Medium effort</span>
+      <span class="badge impact">High impact</span>
+    </div>
+  </div>
+  <div class="ai-card">
+    <div class="ai-card-title">AI PR Reviewer</div>
+    <div class="ai-card-body">Claude Code review on MrClean PRs. Already partially in place. Formalise it in onboarding so new hires know to use it from their very first PR.</div>
+    <div class="ai-card-badges">
+      <span class="badge effort-l">Low effort</span>
+      <span class="badge impact">High impact</span>
+      <span class="badge done">✓ Partially done</span>
+    </div>
+  </div>
+  <div class="ai-card">
+    <div class="ai-card-title">Contextual Glossary Tooltips</div>
+    <div class="ai-card-body">Generate hover tooltips for SG jargon inline in each Confluence module page, rather than forcing new hires to navigate away to the Terminology pages.</div>
+    <div class="ai-card-badges">
+      <span class="badge effort-l">Low effort</span>
+      <span class="badge impact">Medium impact</span>
+    </div>
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- ══════════════════════════════════════════════════
+     NON-AI STRUCTURAL
+══════════════════════════════════════════════════ -->
+<div class="section-title">🔧 Non-AI Structural Improvements</div>
+
+<div class="keep-list" style="gap:0.8rem;margin-bottom:1.5rem;">
+  <div class="keep-item">
+    <div style="color:var(--accent2);font-size:0.9rem;margin-top:0.05rem;flex-shrink:0;">1.</div>
+    <span><strong>Urgency tiers on Day 1.</strong> Separate "Must do before lunch" / "Before end of week" / "Whenever". Stop competing printers with MFA.</span>
+  </div>
+  <div class="keep-item">
+    <div style="color:var(--accent2);font-size:0.9rem;margin-top:0.05rem;flex-shrink:0;">2.</div>
+    <span><strong>Buddy prep guide.</strong> A parallel checklist for the buddy — what to prepare before Day 1, what to cover in Week 1 1:1s, what questions to expect. The buddy system is the right foundation; give buddies the structure to be consistent.</span>
+  </div>
+  <div class="keep-item">
+    <div style="color:var(--accent2);font-size:0.9rem;margin-top:0.05rem;flex-shrink:0;">3.</div>
+    <span><strong>Site-specific callouts.</strong> Clearly flag VTC / RTP / NB steps. Don't bury them in general prose where someone on a different continent follows the wrong instructions.</span>
+  </div>
+  <div class="keep-item">
+    <div style="color:var(--accent2);font-size:0.9rem;margin-top:0.05rem;flex-shrink:0;">4.</div>
+    <span><strong>Dead content audit.</strong> Module 3 still references SG 11.2, old <code>wikid.netapp.com</code> and <code>confluence.eng.netapp.com</code> URLs, RTP vSphere creds in plaintext. One afternoon of link-checking would fix most of it.</span>
+  </div>
+  <div class="keep-item">
+    <div style="color:var(--accent2);font-size:0.9rem;margin-top:0.05rem;flex-shrink:0;">5.</div>
+    <span><strong>Video curation.</strong> Remove dead links. Add durations. Add a one-sentence "what you'll learn" for each. A table of 4 curated videos beats a wall of 12 unverified links.</span>
+  </div>
+  <div class="keep-item">
+    <div style="color:var(--accent2);font-size:0.9rem;margin-top:0.05rem;flex-shrink:0;">6.</div>
+    <span><strong>Feedback loop.</strong> 30-day and 60-day anonymous survey for new hires. "What confused you? What was missing? What was great?" Iterate the docs every cohort, not every two years.</span>
+  </div>
+  <div class="keep-item">
+    <div style="color:var(--accent2);font-size:0.9rem;margin-top:0.05rem;flex-shrink:0;">7.</div>
+    <span><strong>Rookie Cookies goes on Day 1 page.</strong> Currently buried in a sidebar note in QA Module 2 — only QA new hires find it. Put it prominently on the main page so everyone knows about it regardless of role.</span>
+  </div>
+  <div class="keep-item">
+    <div style="color:var(--accent2);font-size:0.9rem;margin-top:0.05rem;flex-shrink:0;">8.</div>
+    <span><strong>GenAI tools page on Day 1.</strong> Move the GenAI Tools Confluence link from a table cell on the main page to a named step: "Set up your AI tools on Day 1 — here's what the team uses and how."</span>
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- ══════════════════════════════════════════════════
+     WHAT TO KEEP
+══════════════════════════════════════════════════ -->
+<div class="section-title">✓ What to Keep — It's Already Good</div>
+
+<div class="keep-list">
+  <div class="keep-item">
+    <div class="keep-icon">✓</div>
+    <span><strong>Module 2 Git Exercise</strong> — well-structured, has a real deliverable (a PR), teaches the full workflow end-to-end. Keep the core, just add context and surface the hidden gems.</span>
+  </div>
+  <div class="keep-item">
+    <div class="keep-icon">✓</div>
+    <span><strong>Tool link table in Module 1</strong> — useful, just trim to 6–8 rows so it stays scannable.</span>
+  </div>
+  <div class="keep-item">
+    <div class="keep-icon">✓</div>
+    <span><strong>Mantis workflow in QA Module 2</strong> — the step-by-step <code>resolved → qa → tested</code> cycle is clear and actionable. Keep exactly as is.</span>
+  </div>
+  <div class="keep-item">
+    <div class="keep-icon">✓</div>
+    <span><strong>Common Passwords table in Module 3</strong> — a lifesaver. Keep it prominently.</span>
+  </div>
+  <div class="keep-item">
+    <div class="keep-icon">✓</div>
+    <span><strong>IP conflict warnings in Module 3</strong> — the coffee examples are effective and human. Keep the tone, just add the AI guard on top.</span>
+  </div>
+  <div class="keep-item">
+    <div class="keep-icon">✓</div>
+    <span><strong>The buddy system model</strong> — the right foundation. Everything above is designed to enhance it, not replace it.</span>
+  </div>
+  <div class="keep-item">
+    <div class="keep-icon">✓</div>
+    <span><strong>Rookie Cookies</strong> — keep the tradition, just move it somewhere everyone sees it.</span>
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- timeline visual -->
+<div class="section-title">📅 Revised Module Sequence at a Glance</div>
+<div style="
+  background:var(--bg-card);
+  border:2px solid var(--border);
+  border-radius:15px 255px 15px 225px/225px 15px 255px 15px;
+  box-shadow:var(--shadow);
+  padding:1.3rem 1.6rem;
+  font-family:'JetBrains Mono',monospace;
+  font-size:0.8rem;
+  line-height:2;
+  color:var(--text-muted);
+">
+<span style="color:var(--accent)">Before Day 1   →</span> Pre-read brief, 1 video, access requests pre-submitted<br>
+<span style="color:var(--accent)">Day 1 AM       →</span> Badge, password, MFA — the three real blockers<br>
+<span style="color:var(--accent)">Day 1 PM       →</span> Teams, mailing lists, buddy, bookmarks<br>
+<span style="color:var(--accent2)">Day 2          →</span> VED/BigTop + runner — role split begins here<br>
+<span style="color:var(--accent2)">Day 3          →</span> Grid Primer read + reference grid exploration<br>
+<span style="color:var(--accent2)">Day 3–4        →</span> Video deep-dive (curated, with durations)<br>
+<span style="color:var(--text)">Days 4–5       →</span> Git exercise (Module 2) → first PR<br>
+<span style="color:var(--text)">Week 2, D1–2   →</span> Your own grid (Module 3)<br>
+<span style="color:var(--text)">Week 2, D3–4   →</span> S3 basics on your grid (Module 4)<br>
+<span style="color:var(--accent3)">Week 2–3 QA    →</span> MrClean walkthrough, triage shadow, first solo test<br>
+<span style="color:var(--accent3)">Week 2–3 Dev   →</span> Repo build, first story, ADE intro<br>
+<span style="color:var(--accent3)">Week 3+        →</span> Active sprint work, first solo Mantis ticket
+</div>
+
+<footer>
+  <div>Author: DJ &mdash; Reviewer: Claude &mdash; 2026-05-13</div>
+  <div style="margin-top:0.3rem;opacity:0.5;">Based on SGWS Confluence: Onboarding StorageGRID New Hire + child pages</div>
+</footer>
+
+</div><!-- /container -->
+
+<script>
+// Theme
+function toggleTheme() {
+  const h = document.documentElement;
+  h.dataset.theme = h.dataset.theme === 'dark' ? 'light' : 'dark';
+  localStorage.setItem('sg-ob-theme', h.dataset.theme);
+}
+(function(){
+  const t = localStorage.getItem('sg-ob-theme');
+  if(t) document.documentElement.dataset.theme = t;
+})();
+
+// Phase accordion
+function togglePhase(header) {
+  const content = header.nextElementSibling;
+  const expanded = header.getAttribute('aria-expanded') === 'true';
+  header.setAttribute('aria-expanded', !expanded);
+  content.classList.toggle('open', !expanded);
+}
+
+// Checkboxes with localStorage
+function toggleCheck(el) {
+  el.classList.toggle('checked');
+  const id = el.dataset.id;
+  if(id) {
+    const state = JSON.parse(localStorage.getItem('sg-ob-checks') || '{}');
+    state[id] = el.classList.contains('checked');
+    localStorage.setItem('sg-ob-checks', JSON.stringify(state));
+  }
+}
+
+// Restore checkbox state
+(function(){
+  const state = JSON.parse(localStorage.getItem('sg-ob-checks') || '{}');
+  document.querySelectorAll('.step-check[data-id]').forEach(el => {
+    if(state[el.dataset.id]) el.classList.add('checked');
+  });
+})();
+</script>
+
+</body>
+</html>
